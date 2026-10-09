@@ -23,6 +23,22 @@ const profileEssay = document.querySelector(".profile-essay");
 
 if (aboutDialog && profileEssay) profileEssay.insertAdjacentElement("afterend", aboutDialog);
 
+const main = document.querySelector("#top");
+const orderedSectionIds = ["observations", "work", "behind-scenes", "profile", "capabilities"];
+if (main) orderedSectionIds.forEach(id => main.append(document.querySelector(`#${id}`)));
+
+const archiveIntro = document.querySelector(".archive-intro");
+if (archiveIntro && galleryTrack) {
+  archiveIntro.classList.add("section-postscript");
+  galleryTrack.insertAdjacentElement("afterend", archiveIntro);
+}
+
+const taxonomyNote = document.querySelector(".taxonomy-note");
+if (taxonomyNote && projectList) {
+  taxonomyNote.classList.add("section-postscript");
+  projectList.insertAdjacentElement("afterend", taxonomyNote);
+}
+
 let activeCategory = "all";
 let activeProject = null;
 let activeSlide = 0;
@@ -149,6 +165,17 @@ function projectLinkMarkup(project, className) {
   return projectLinks(project).map(item => `<a class="${className}" href="${escapeHtml(item.href)}" target="_blank" rel="noreferrer"><span>${escapeHtml(item.label || "相关链接")}</span><span>${escapeHtml(item.href)} ↗</span></a>`).join("");
 }
 
+function projectExpandedMarkup(project) {
+  const media = project.media || [];
+  return `
+    <header>
+      <span>PROJECT MEDIA / 作品影像与链接</span>
+      <button class="project-collapse" type="button" data-project-collapse="${project.id}" aria-label="收起${escapeHtml(project.title)}完整项目" title="收起项目"><span class="project-toggle-arrow is-open" aria-hidden="true"></span></button>
+    </header>
+    ${media.length ? `<div class="project-inline-media ${media.length === 1 ? "is-single" : ""}">${media.map((item, index) => `<figure><img src="${item.src}" alt="${escapeHtml(item.alt || `${project.title}案例图片 ${index + 1}`)}" width="1600" height="900" loading="lazy" decoding="async"><figcaption>${escapeHtml(item.label || `IMAGE ${String(index + 1).padStart(2, "0")}`)}</figcaption></figure>`).join("")}</div>` : ""}
+    ${projectLinks(project).length ? `<div class="project-inline-links">${projectLinkMarkup(project, "project-inline-link")}</div>` : ""}`;
+}
+
 function renderFilters() {
   filters.innerHTML = data.categories.map(category => {
     const count = category.id === "all" ? data.projects.length : data.projects.filter(item => item.category === category.id).length;
@@ -170,7 +197,7 @@ function renderProjects() {
       </span>` : "";
     return `
       <article class="project-row project-${escapeHtml(project.id)} project-side-${side} reveal-section ${project.importance === "secondary" ? "is-secondary" : ""}">
-        <button class="project-media visual-${escapeHtml(project.visual || "default")} ${project.cover ? "has-cover" : ""}" ${project.cover ? `style="--project-cover:url('${project.cover}')"` : ""} type="button" data-project="${project.id}" aria-expanded="false" aria-label="展开${escapeHtml(project.title)}完整项目信息">
+        <button class="project-media visual-${escapeHtml(project.visual || "default")} ${project.cover ? "has-cover" : ""}" ${project.cover ? `style="--project-cover:url('${project.cover}')"` : ""} type="button" data-project="${project.id}" aria-expanded="true" aria-label="收起${escapeHtml(project.title)}完整项目">
           ${cover}
           <div class="media-top"><span>PROJECT ${project.no}</span><span>${escapeHtml(project.year)}</span></div>
           <div class="project-card-copy">
@@ -178,21 +205,19 @@ function renderProjects() {
             <h3>${escapeHtml(project.title)}</h3>
             <span>${escapeHtml(project.type)}</span>
           </div>
-          <div class="media-bottom"><span>${escapeHtml(project.role)}</span><span>OPEN CASE +</span></div>
+          <div class="media-bottom"><span>${escapeHtml(project.role)}</span><span class="project-media-action">项目详情 <i class="project-toggle-arrow is-open" aria-hidden="true"></i></span></div>
         </button>
         <div class="project-copy">
-          <p class="project-context"><b>PROJECT NOTE / 项目介绍</b><span>${escapeHtml(project.relation)} · ${escapeHtml(project.type)}</span></p>
           <div class="project-summary">${projectSummaryMarkup(project)}</div>
           <div class="project-facts">
             <div><b>ROLE</b><span>${escapeHtml(project.role)}</span></div>
             <div><b>RESULT</b><span>${escapeHtml(project.result)}</span></div>
           </div>
           <div class="project-actions">
-            <button type="button" data-project="${project.id}" aria-expanded="false">完整项目信息 +</button>
-            ${projectLinkMarkup(project, "project-url")}
+            <button class="project-toggle" type="button" data-project="${project.id}" aria-expanded="true" aria-label="收起${escapeHtml(project.title)}完整项目"><span class="project-toggle-label">收起完整项目</span><span class="project-toggle-arrow is-open" aria-hidden="true"></span></button>
           </div>
         </div>
-        <section class="project-inline-case" data-project-inline="${project.id}" hidden></section>
+        <section class="project-inline-case open" data-project-inline="${project.id}" style="height:auto">${projectExpandedMarkup(project)}</section>
       </article>`;
   }).join("");
   observeReveals();
@@ -201,11 +226,10 @@ function renderProjects() {
 function setProjectExpanded(id, expanded) {
   document.querySelectorAll(`[data-project="${id}"]`).forEach(button => {
     button.setAttribute("aria-expanded", String(expanded));
-    if (button.parentElement?.classList.contains("project-actions")) {
-      button.textContent = expanded ? "收起项目信息 −" : "完整项目信息 +";
-    }
-    const mediaAction = button.querySelector(".media-bottom span:last-child");
-    if (mediaAction) mediaAction.textContent = expanded ? "CLOSE CASE −" : "OPEN CASE +";
+    button.setAttribute("aria-label", `${expanded ? "收起" : "展开"}完整项目`);
+    const label = button.querySelector(".project-toggle-label");
+    if (label) label.textContent = expanded ? "收起完整项目" : "展开完整项目";
+    button.querySelectorAll(".project-toggle-arrow").forEach(arrow => arrow.classList.toggle("is-open", expanded));
   });
 }
 
@@ -224,18 +248,7 @@ function openProject(id) {
     return;
   }
 
-  document.querySelectorAll("[data-project-inline]:not([hidden])").forEach(section => {
-    if (section !== inline) closeInlineProject(section.dataset.projectInline);
-  });
-  const media = project.media || [];
-  inline.innerHTML = `
-    <header><span>CASE FILE / 完整项目</span><button type="button" data-project-collapse="${project.id}">收起</button></header>
-    <div class="project-inline-copy">
-      <div><p class="overline">${escapeHtml(project.relation)}</p><h3>${escapeHtml(project.title)}</h3><div class="project-inline-summary">${projectSummaryMarkup(project)}</div></div>
-      <dl><dt>PROJECT TYPE</dt><dd>${escapeHtml(project.type)}</dd><dt>MY ROLE</dt><dd>${escapeHtml(project.role)}</dd><dt>RESULT</dt><dd>${escapeHtml(project.result)}</dd></dl>
-    </div>
-    ${media.length ? `<div class="project-inline-media ${media.length === 1 ? "is-single" : ""}">${media.map((item, index) => `<figure><img src="${item.src}" alt="${escapeHtml(item.alt || `${project.title}案例图片 ${index + 1}`)}" width="1600" height="900" loading="lazy" decoding="async"><figcaption>${escapeHtml(item.label || `IMAGE ${String(index + 1).padStart(2, "0")}`)}</figcaption></figure>`).join("")}</div>` : ""}
-    ${projectLinks(project).length ? `<div class="project-inline-links">${projectLinkMarkup(project, "project-inline-link")}</div>` : ""}`;
+  inline.innerHTML = projectExpandedMarkup(project);
   window.clearTimeout(inline._closeTimer);
   window.clearTimeout(inline._openTimer);
   inline.hidden = false;
@@ -326,7 +339,8 @@ function placeholderMarkup(item, index) {
 function layoutArchiveGrid(grid) {
   const previousFrame = galleryLayoutFrames.get(grid);
   if (previousFrame) window.cancelAnimationFrame(previousFrame);
-  const buttons = [...grid.querySelectorAll(".archive-thumb")];
+  const buttons = [...grid.querySelectorAll(".archive-thumb")]
+    .sort((a, b) => Number(a.dataset.layoutOrder || 0) - Number(b.dataset.layoutOrder || 0));
   const images = buttons.map(button => button.querySelector("img")).filter(Boolean);
 
   grid.classList.toggle("is-placeholder-grid", images.length === 0);
@@ -343,6 +357,26 @@ function layoutArchiveGrid(grid) {
       if (!buttons.every(button => grid.contains(button))) return;
       const width = grid.clientWidth;
       if (!width) return;
+
+      if (window.innerWidth <= 760) {
+        const columns = [document.createElement("div"), document.createElement("div")];
+        const columnHeights = [0, 0];
+        columns.forEach(column => { column.className = "archive-column"; });
+        buttons.forEach((button, index) => {
+          button.style.removeProperty("width");
+          const image = images[index];
+          const ratio = image?.naturalWidth && image?.naturalHeight ? image.naturalWidth / image.naturalHeight : 1;
+          const columnIndex = columnHeights[0] <= columnHeights[1] ? 0 : 1;
+          columns[columnIndex].append(button);
+          columnHeights[columnIndex] += (width / 2) / ratio + 28;
+        });
+        grid.replaceChildren(...columns);
+        grid.classList.remove("is-placeholder-grid", "is-loading-layout", "is-justified");
+        grid.classList.add("is-mobile-masonry");
+        return;
+      }
+
+      grid.classList.remove("is-mobile-masonry");
 
       const gap = window.innerWidth <= 760 ? 7 : 12;
       const targetHeight = window.innerWidth <= 760 ? 220 : 260;
@@ -411,7 +445,7 @@ function updateGallery(direction = 0, isAutomatic = false) {
   const grid = document.querySelector("#galleryGrid");
   const preview = item.images.length ? item.images : Array.from({ length: 8 }, () => null);
   grid.innerHTML = preview.map((image, index) => `
-    <button class="archive-thumb archive-thumb-${index + 1}" type="button" data-image-index="${index}" aria-label="查看${item.title}第 ${index + 1} 张图片">
+    <button class="archive-thumb archive-thumb-${index + 1}" type="button" data-layout-order="${index}" data-image-index="${index}" aria-label="查看${item.title}第 ${index + 1} 张图片">
       ${image ? `<img src="${image.src}" alt="${escapeHtml(image.alt)}" decoding="async">` : placeholderMarkup(item, index)}
       <em>${image ? `${escapeHtml(item.code)} ${String(index + 1).padStart(2,"0")}` : `IMAGE SLOT ${String(index + 1).padStart(2,"0")}`}</em>
     </button>`).join("");
@@ -428,7 +462,7 @@ function renderAllGalleries() {
     return `<section class="archive-chapter archive-chapter-${groupIndex + 1}" style="--chapter-index:${groupIndex}" aria-labelledby="archive-title-${groupIndex}">
       <header class="archive-chapter-head"><div><span>${String(groupIndex + 1).padStart(2,"0")} / ${String(galleryItems.length).padStart(2,"0")}</span><h3 id="archive-title-${groupIndex}">${escapeHtml(item.title)}</h3></div><p>${escapeHtml(item.description)}${item.images.length ? ` · ${item.images.length} 张` : " · 待补充"}</p></header>
       <div class="archive-grid gallery-${item.code.toLowerCase()}" data-gallery-grid="${groupIndex}">
-        ${preview.map((image, index) => `<button class="archive-thumb archive-thumb-${index + 1}" type="button" data-gallery-index="${groupIndex}" data-image-index="${index}" aria-label="查看${item.title}第 ${index + 1} 张图片">${image ? `<img src="${image.src}" alt="${escapeHtml(image.alt)}" decoding="async">` : placeholderMarkup(item, index)}<em>${image ? `${escapeHtml(item.code)} ${String(index + 1).padStart(2,"0")}` : `IMAGE SLOT ${String(index + 1).padStart(2,"0")}`}</em></button>`).join("")}
+        ${preview.map((image, index) => `<button class="archive-thumb archive-thumb-${index + 1}" type="button" data-layout-order="${index}" data-gallery-index="${groupIndex}" data-image-index="${index}" aria-label="查看${item.title}第 ${index + 1} 张图片">${image ? `<img src="${image.src}" alt="${escapeHtml(image.alt)}" decoding="async">` : placeholderMarkup(item, index)}<em>${image ? `${escapeHtml(item.code)} ${String(index + 1).padStart(2,"0")}` : `IMAGE SLOT ${String(index + 1).padStart(2,"0")}`}</em></button>`).join("")}
       </div>
     </section>`;
   }).join("");
@@ -536,7 +570,7 @@ function updateCoverScroll() {
   cover.style.setProperty("--cover-progress", progress.toFixed(3));
 }
 
-const sceneIds = ["profile", "capabilities", "observations", "work", "contact"];
+const sceneIds = ["profile", "capabilities", "observations", "work", "behind-scenes", "contact"];
 function updateActiveNav() {
   const readingLine = window.scrollY + window.innerHeight * .32;
   let current = sceneIds[0];
@@ -656,7 +690,7 @@ function observeReveals() {
 }
 
 function prepareScenes() {
-  document.querySelectorAll("#profile, #capabilities, #observations, #work, #contact").forEach(scene => scene.classList.add("scene"));
+  document.querySelectorAll("#profile, #capabilities, #observations, #work, #behind-scenes, #contact").forEach(scene => scene.classList.add("scene"));
   document.body.classList.add("motion-ready");
   scheduleScrollWork();
 }
