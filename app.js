@@ -158,7 +158,12 @@ function imageAspectRatio(image) {
   const src = image.currentSrc || image.getAttribute("src") || image.dataset.src;
   const dimensions = window.IMAGE_DIMENSIONS?.[src];
   if (dimensions) return dimensions[0] / dimensions[1];
+  if (image.width && image.height) return image.width / image.height;
   return image.naturalWidth && image.naturalHeight ? image.naturalWidth / image.naturalHeight : 1;
+}
+
+function galleryPreviewSrc(src) {
+  return `assets/previews/${src.replace(/^assets\//, "")}`;
 }
 
 function projectLinks(project) {
@@ -464,7 +469,7 @@ function updateGallery(direction = 0, isAutomatic = false) {
   const preview = item.images.length ? item.images : Array.from({ length: 8 }, () => null);
   grid.innerHTML = preview.map((image, index) => `
     <button class="archive-thumb archive-thumb-${index + 1}" type="button" data-layout-order="${index}" data-image-index="${index}" aria-label="查看${item.title}第 ${index + 1} 张图片">
-      ${image ? `<img src="${image.src}" alt="${escapeHtml(image.alt)}"${imageSizeAttributes(image.src)} loading="lazy" decoding="async">` : placeholderMarkup(item, index)}
+      ${image ? `<img src="${galleryPreviewSrc(image.src)}" alt="${escapeHtml(image.alt)}"${imageSizeAttributes(image.src)} loading="lazy" decoding="async">` : placeholderMarkup(item, index)}
       <em>${image ? `${escapeHtml(item.code)} ${String(index + 1).padStart(2,"0")}` : `IMAGE SLOT ${String(index + 1).padStart(2,"0")}`}</em>
     </button>`).join("");
   grid.className = `archive-grid gallery-${item.code.toLowerCase()} ${isAutomatic ? "is-drifting" : "pop"} ${galleryDirection < 0 ? "from-left" : "from-right"}`;
@@ -480,7 +485,7 @@ function renderAllGalleries() {
     return `<section class="archive-chapter archive-chapter-${groupIndex + 1}" style="--chapter-index:${groupIndex}" aria-labelledby="archive-title-${groupIndex}">
       <header class="archive-chapter-head"><div><span>${String(groupIndex + 1).padStart(2,"0")} / ${String(galleryItems.length).padStart(2,"0")}</span><h3 id="archive-title-${groupIndex}">${escapeHtml(item.title)}</h3></div><p>${escapeHtml(item.description)}${item.images.length ? ` · ${item.images.length} 张` : " · 待补充"}</p></header>
       <div class="archive-grid gallery-${item.code.toLowerCase()}" data-gallery-grid="${groupIndex}">
-        ${preview.map((image, index) => `<button class="archive-thumb archive-thumb-${index + 1}" type="button" data-layout-order="${index}" data-gallery-index="${groupIndex}" data-image-index="${index}" aria-label="查看${item.title}第 ${index + 1} 张图片">${image ? `<img data-src="${image.src}" alt="${escapeHtml(image.alt)}"${imageSizeAttributes(image.src)} loading="lazy" decoding="async">` : placeholderMarkup(item, index)}<em>${image ? `${escapeHtml(item.code)} ${String(index + 1).padStart(2,"0")}` : `IMAGE SLOT ${String(index + 1).padStart(2,"0")}`}</em></button>`).join("")}
+        ${preview.map((image, index) => `<button class="archive-thumb archive-thumb-${index + 1}" type="button" data-layout-order="${index}" data-gallery-index="${groupIndex}" data-image-index="${index}" aria-label="查看${item.title}第 ${index + 1} 张图片">${image ? `<img data-src="${galleryPreviewSrc(image.src)}" alt="${escapeHtml(image.alt)}"${imageSizeAttributes(image.src)} loading="lazy" decoding="async">` : placeholderMarkup(item, index)}<em>${image ? `${escapeHtml(item.code)} ${String(index + 1).padStart(2,"0")}` : `IMAGE SLOT ${String(index + 1).padStart(2,"0")}`}</em></button>`).join("")}
       </div>
     </section>`;
   }).join("");
