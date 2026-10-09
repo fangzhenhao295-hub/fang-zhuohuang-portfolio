@@ -51,8 +51,10 @@ let galleryIsVisible = false;
 let galleryDirection = 1;
 const galleryLayoutFrames = new WeakMap();
 let galleryResizeTimer = 0;
+let archiveLoadObserver;
 const inlineTransitionMs = 720;
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
 
 const numberedImages = (base, prefix, count, credit, note) => Array.from({ length: count }, (_, index) => ({
   src: `${base}/${prefix}-${String(index + 1).padStart(2, "0")}.jpg`,
@@ -147,6 +149,18 @@ function escapeHtml(value = "") {
   return String(value).replace(/[&<>'"]/g, char => ({ "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;",'"':"&quot;" })[char]);
 }
 
+function imageSizeAttributes(src) {
+  const dimensions = window.IMAGE_DIMENSIONS?.[src];
+  return dimensions ? ` width="${dimensions[0]}" height="${dimensions[1]}"` : "";
+}
+
+function imageAspectRatio(image) {
+  const src = image.currentSrc || image.getAttribute("src") || image.dataset.src;
+  const dimensions = window.IMAGE_DIMENSIONS?.[src];
+  if (dimensions) return dimensions[0] / dimensions[1];
+  return image.naturalWidth && image.naturalHeight ? image.naturalWidth / image.naturalHeight : 1;
+}
+
 function projectLinks(project) {
   if (Array.isArray(project.links) && project.links.length) return project.links;
   return project.link ? [{ href: project.link, label: project.linkLabel || "观看原片" }] : [];
@@ -172,7 +186,7 @@ function projectExpandedMarkup(project) {
       <span>PROJECT MEDIA / 作品影像与链接</span>
       <button class="project-collapse" type="button" data-project-collapse="${project.id}" aria-label="收起${escapeHtml(project.title)}完整项目" title="收起项目"><span class="project-toggle-arrow is-open" aria-hidden="true"></span></button>
     </header>
-    ${media.length ? `<div class="project-inline-media ${media.length === 1 ? "is-single" : ""}">${media.map((item, index) => `<figure><img src="${item.src}" alt="${escapeHtml(item.alt || `${project.title}案例图片 ${index + 1}`)}" width="1600" height="900" loading="lazy" decoding="async"><figcaption>${escapeHtml(item.label || `IMAGE ${String(index + 1).padStart(2, "0")}`)}</figcaption></figure>`).join("")}</div>` : ""}
+    ${media.length ? `<div class="project-inline-media ${media.length === 1 ? "is-single" : ""}">${media.map((item, index) => `<figure><img src="${item.src}" alt="${escapeHtml(item.alt || `${project.title}案例图片 ${index + 1}`)}"${imageSizeAttributes(item.src)} loading="lazy" decoding="async"><figcaption>${escapeHtml(item.label || `IMAGE ${String(index + 1).padStart(2, "0")}`)}</figcaption></figure>`).join("")}</div>` : ""}
     ${projectLinks(project).length ? `<div class="project-inline-links">${projectLinkMarkup(project, "project-inline-link")}</div>` : ""}`;
 }
 
@@ -189,7 +203,7 @@ function renderProjects() {
     const side = index % 2 === 0 ? "left" : "right";
     const cover = project.cover ? `
       <span class="project-cover-frame" aria-hidden="true">
-        <img class="project-cover" src="${project.cover}" alt="">
+        <img class="project-cover" src="${project.cover}" alt=""${imageSizeAttributes(project.cover)} loading="lazy" decoding="async" fetchpriority="low">
         <span class="project-corner project-corner-a"></span>
         <span class="project-corner project-corner-b"></span>
         <span class="project-corner project-corner-c"></span>
@@ -226,7 +240,8 @@ function renderProjects() {
 function setProjectExpanded(id, expanded) {
   document.querySelectorAll(`[data-project="${id}"]`).forEach(button => {
     button.setAttribute("aria-expanded", String(expanded));
-    button.setAttribute("aria-label", `${expanded ? "收起" : "展开"}完整项目`);
+    const project = data.projects.find(item => item.id === id);
+    button.setAttribute("aria-label", `${expanded ? "收起" : "展开"}${project ? project.title : ""}完整项目`);
     const label = button.querySelector(".project-toggle-label");
     if (label) label.textContent = expanded ? "收起完整项目" : "展开完整项目";
     button.querySelectorAll(".project-toggle-arrow").forEach(arrow => arrow.classList.toggle("is-open", expanded));
@@ -347,9 +362,12 @@ function layoutArchiveGrid(grid) {
   grid.classList.remove("is-loading-layout");
   if (!images.length) return;
 
-  const imagesReady = Promise.allSettled(images.map(image => image.complete
+  const hasStableDimensions = images.every(image => Boolean(window.IMAGE_DIMENSIONS?.[image.getAttribute("src") || image.dataset.src]));
+  const imagesReady = hasStableDimensions
     ? Promise.resolve()
-    : image.decode().catch(() => undefined)));
+    : Promise.allSettled(images.map(image => image.complete
+      ? Promise.resolve()
+      : image.decode().catch(() => undefined)));
   const fallbackReady = new Promise(resolve => window.setTimeout(resolve, 900));
 
   Promise.race([imagesReady, fallbackReady]).then(() => {
@@ -365,13 +383,13 @@ function layoutArchiveGrid(grid) {
         buttons.forEach((button, index) => {
           button.style.removeProperty("width");
           const image = images[index];
-          const ratio = image?.naturalWidth && image?.naturalHeight ? image.naturalWidth / image.naturalHeight : 1;
+          const ratio = imageAspectRatio(image);
           const columnIndex = columnHeights[0] <= columnHeights[1] ? 0 : 1;
           columns[columnIndex].append(button);
           columnHeights[columnIndex] += (width / 2) / ratio + 28;
         });
         grid.replaceChildren(...columns);
-        grid.classList.remove("is-placeholder-grid", "is-loading-layout", "is-justified");
+        grid.classList.remove("is-placeholder-grid", "is-loading-layout", "is-justified", "is-deferred");
         grid.classList.add("is-mobile-masonry");
         return;
       }
@@ -380,7 +398,7 @@ function layoutArchiveGrid(grid) {
 
       const gap = window.innerWidth <= 760 ? 7 : 12;
       const targetHeight = window.innerWidth <= 760 ? 220 : 260;
-      const ratios = images.map(image => image.naturalWidth && image.naturalHeight ? image.naturalWidth / image.naturalHeight : 1);
+      const ratios = images.map(imageAspectRatio);
       const ratioSum = ratios.reduce((sum, ratio) => sum + ratio, 0);
       const naturalRowCount = Math.round((ratioSum * targetHeight) / width);
       const rowCount = Math.max(1, Math.min(buttons.length, images.length <= 8 ? 2 : naturalRowCount));
@@ -426,7 +444,7 @@ function layoutArchiveGrid(grid) {
       });
 
       grid.replaceChildren(fragment);
-      grid.classList.remove("is-placeholder-grid", "is-loading-layout");
+      grid.classList.remove("is-placeholder-grid", "is-loading-layout", "is-deferred");
       grid.classList.add("is-justified");
     });
     galleryLayoutFrames.set(grid, frame);
@@ -446,7 +464,7 @@ function updateGallery(direction = 0, isAutomatic = false) {
   const preview = item.images.length ? item.images : Array.from({ length: 8 }, () => null);
   grid.innerHTML = preview.map((image, index) => `
     <button class="archive-thumb archive-thumb-${index + 1}" type="button" data-layout-order="${index}" data-image-index="${index}" aria-label="查看${item.title}第 ${index + 1} 张图片">
-      ${image ? `<img src="${image.src}" alt="${escapeHtml(image.alt)}" decoding="async">` : placeholderMarkup(item, index)}
+      ${image ? `<img src="${image.src}" alt="${escapeHtml(image.alt)}"${imageSizeAttributes(image.src)} loading="lazy" decoding="async">` : placeholderMarkup(item, index)}
       <em>${image ? `${escapeHtml(item.code)} ${String(index + 1).padStart(2,"0")}` : `IMAGE SLOT ${String(index + 1).padStart(2,"0")}`}</em>
     </button>`).join("");
   grid.className = `archive-grid gallery-${item.code.toLowerCase()} ${isAutomatic ? "is-drifting" : "pop"} ${galleryDirection < 0 ? "from-left" : "from-right"}`;
@@ -462,11 +480,21 @@ function renderAllGalleries() {
     return `<section class="archive-chapter archive-chapter-${groupIndex + 1}" style="--chapter-index:${groupIndex}" aria-labelledby="archive-title-${groupIndex}">
       <header class="archive-chapter-head"><div><span>${String(groupIndex + 1).padStart(2,"0")} / ${String(galleryItems.length).padStart(2,"0")}</span><h3 id="archive-title-${groupIndex}">${escapeHtml(item.title)}</h3></div><p>${escapeHtml(item.description)}${item.images.length ? ` · ${item.images.length} 张` : " · 待补充"}</p></header>
       <div class="archive-grid gallery-${item.code.toLowerCase()}" data-gallery-grid="${groupIndex}">
-        ${preview.map((image, index) => `<button class="archive-thumb archive-thumb-${index + 1}" type="button" data-layout-order="${index}" data-gallery-index="${groupIndex}" data-image-index="${index}" aria-label="查看${item.title}第 ${index + 1} 张图片">${image ? `<img src="${image.src}" alt="${escapeHtml(image.alt)}" decoding="async">` : placeholderMarkup(item, index)}<em>${image ? `${escapeHtml(item.code)} ${String(index + 1).padStart(2,"0")}` : `IMAGE SLOT ${String(index + 1).padStart(2,"0")}`}</em></button>`).join("")}
+        ${preview.map((image, index) => `<button class="archive-thumb archive-thumb-${index + 1}" type="button" data-layout-order="${index}" data-gallery-index="${groupIndex}" data-image-index="${index}" aria-label="查看${item.title}第 ${index + 1} 张图片">${image ? `<img data-src="${image.src}" alt="${escapeHtml(image.alt)}"${imageSizeAttributes(image.src)} loading="lazy" decoding="async">` : placeholderMarkup(item, index)}<em>${image ? `${escapeHtml(item.code)} ${String(index + 1).padStart(2,"0")}` : `IMAGE SLOT ${String(index + 1).padStart(2,"0")}`}</em></button>`).join("")}
       </div>
     </section>`;
   }).join("");
-  viewport.querySelectorAll("[data-gallery-grid]").forEach(layoutArchiveGrid);
+  const grids = [...viewport.querySelectorAll("[data-gallery-grid]")];
+  grids.forEach(layoutArchiveGrid);
+  archiveLoadObserver?.disconnect();
+  archiveLoadObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const image = entry.target;
+    image.src = image.dataset.src;
+    image.removeAttribute("data-src");
+    archiveLoadObserver.unobserve(image);
+  }), { rootMargin:"1000px 0px" });
+  viewport.querySelectorAll("img[data-src]").forEach(image => archiveLoadObserver.observe(image));
 }
 
 function scheduleGalleryRotation() {
@@ -523,9 +551,15 @@ let proximityReady = false;
 let targetBlur = 7;
 let currentBlur = 0;
 let focusFrame = 0;
+let coverIsVisible = true;
+
+function canUseCoverMotion() {
+  return finePointer.matches && !reduceMotion.matches && coverIsVisible && !document.hidden;
+}
 
 window.setTimeout(() => cover.classList.remove("is-initial-focus"), 3000);
 window.setTimeout(() => {
+  if (!finePointer.matches || reduceMotion.matches) return;
   proximityReady = true;
   currentBlur = 7;
   cover.classList.add("is-proximity-ready");
@@ -533,7 +567,10 @@ window.setTimeout(() => {
 }, 8000);
 
 function runFocusEase() {
-  if (!proximityReady) return;
+  if (!proximityReady || !canUseCoverMotion()) {
+    focusFrame = 0;
+    return;
+  }
   currentBlur += (targetBlur - currentBlur) * .075;
   cover.style.setProperty("--proximity-blur", `${currentBlur.toFixed(3)}px`);
   focusFrame = requestAnimationFrame(runFocusEase);
@@ -557,9 +594,18 @@ function enterPortfolio() {
   animateScrollTo(Math.max(0, document.querySelector("#profile").offsetTop - 58), 820);
 }
 
-document.addEventListener("pointermove", updateFocusTarget, { passive: true });
+if (finePointer.matches && !reduceMotion.matches) {
+  document.addEventListener("pointermove", updateFocusTarget, { passive: true });
+}
 document.documentElement.addEventListener("pointerleave", () => { targetBlur = 7; });
 window.addEventListener("blur", () => { targetBlur = 7; });
+new IntersectionObserver(entries => {
+  coverIsVisible = entries[0]?.isIntersecting ?? false;
+  if (coverIsVisible && proximityReady && !focusFrame) runFocusEase();
+}, { threshold:0 }).observe(cover);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && proximityReady && !focusFrame) runFocusEase();
+});
 coverMark.addEventListener("click", enterPortfolio);
 coverMark.addEventListener("keydown", event => {
   if (event.key === "Enter" || event.key === " ") { event.preventDefault(); enterPortfolio(); }

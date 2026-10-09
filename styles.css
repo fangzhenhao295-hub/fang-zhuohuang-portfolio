@@ -1101,7 +1101,7 @@ main>section,footer{scroll-margin-top:var(--header-height)}
   .project-inline-media.is-single figure{grid-column:1/-1}
   .project-inline-media figcaption{padding:6px 0 10px;font-size:.5rem}
   .project-inline-links{margin-top:24px}
-  .project-inline-link{gap:8px;margin-top:0;padding:13px 0;font-size:.64rem}
+  .project-inline-link{gap:8px;min-height:46px;margin-top:0;padding:13px 0;font-size:.64rem}
   .project-inline-link span:last-child{overflow-wrap:anywhere;word-break:break-all}
 
   .profile{display:grid;grid-template-columns:1fr;gap:42px}
@@ -1304,7 +1304,29 @@ footer.page-section{
 }
 .behind-card figcaption b{font-weight:500}
 
+/* Mobile QA: defer distant media, preserve touch targets and keep focus visible. */
+a:focus-visible,button:focus-visible{
+  outline:2px solid var(--ink);
+  outline-offset:3px
+}
+.archive-thumb{background:#f1f1ef}
+.archive-thumb img{transition:opacity .28s ease,transform .55s cubic-bezier(.2,.8,.2,1),filter .35s}
+.archive-thumb img[data-src]{opacity:0}
+.project-toggle{min-height:44px}
+.project-collapse{width:44px;height:44px}
+
 @media(max-width:900px){
+  .brand{min-width:44px;min-height:44px}
+  .top-nav{gap:6px}
+  .top-nav a{
+    min-width:44px;
+    min-height:44px;
+    display:grid;
+    place-items:center;
+    padding:10px 7px
+  }
+  .profile-meta a{display:inline-flex;align-items:center;min-height:44px}
+  .contact>div:first-child>a{display:flex;align-items:center;min-height:44px}
   #work.page-section{padding-left:0;padding-right:0}
   #work .work-head{padding-left:var(--page-x);padding-right:var(--page-x)}
   .archive-chapter{
@@ -1331,9 +1353,26 @@ footer.page-section{
     background:none;
     font-size:.52rem
   }
+  .filters button{min-height:44px}
 }
 
 @media(max-width:380px){
   .behind-scenes-grid{gap:6px}
   .behind-card figcaption{font-size:.48rem}
+}
+
+@media(hover:none){
+  .behind-card:hover img{transform:none}
+  .archive-thumb:hover img{transform:none;filter:none}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .reveal-section,
+  .motion-ready .scene .section-title,
+  .motion-ready .scene .work-head,
+  .motion-ready .scene .archive-head,
+  .motion-ready .scene.contact>div{
+    opacity:1!important;
+    transform:none!important
+  }
 }
