@@ -596,7 +596,8 @@ function updateFocusTarget(event) {
 }
 
 function enterPortfolio() {
-  animateScrollTo(Math.max(0, document.querySelector("#profile").offsetTop - 58), 820);
+  const target = document.querySelector("#profile");
+  animateScrollTo(() => sectionScrollTarget(target), 820);
 }
 
 if (finePointer.matches && !reduceMotion.matches) {
@@ -657,16 +658,20 @@ function scheduleScrollWork() {
 window.addEventListener("scroll", scheduleScrollWork, { passive: true });
 window.addEventListener("resize", scheduleScrollWork, { passive: true });
 
+function sectionScrollTarget(target) {
+  return Math.max(0, target.offsetTop - document.querySelector(".site-header").offsetHeight);
+}
+
 function animateScrollTo(targetY, customDuration = 660) {
+  const resolveTarget = typeof targetY === "function" ? targetY : () => targetY;
   const startY = window.scrollY;
-  const distance = targetY - startY;
   const duration = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : customDuration;
-  if (!duration) { window.scrollTo(0, targetY); return; }
+  if (!duration) { window.scrollTo(0, resolveTarget()); return; }
   const startedAt = performance.now();
   const tick = now => {
     const progress = Math.min(1, (now - startedAt) / duration);
     const eased = 1 - Math.pow(1 - progress, 4);
-    window.scrollTo(0, startY + distance * eased);
+    window.scrollTo(0, startY + (resolveTarget() - startY) * eased);
     if (progress < 1) requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
@@ -677,7 +682,7 @@ document.querySelectorAll('.site-header a[href^="#"]').forEach(link => link.addE
   if (!target) return;
   event.preventDefault();
   history.replaceState(null, "", link.getAttribute("href"));
-  animateScrollTo(Math.max(0, target.offsetTop - 58));
+  animateScrollTo(() => sectionScrollTarget(target));
 }));
 
 document.addEventListener("click", event => {
