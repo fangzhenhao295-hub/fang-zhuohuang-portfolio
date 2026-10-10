@@ -20,6 +20,7 @@ const imageCount = document.querySelector("#imageCount");
 const gallerySection = document.querySelector("#observations");
 const galleryTrack = document.querySelector("#galleryViewport");
 const profileEssay = document.querySelector(".profile-essay");
+const behindScenesGrid = document.querySelector(".behind-scenes-grid");
 
 if (aboutDialog && profileEssay) profileEssay.insertAdjacentElement("afterend", aboutDialog);
 
@@ -51,6 +52,7 @@ let galleryIsVisible = false;
 let galleryDirection = 1;
 const galleryLayoutFrames = new WeakMap();
 let galleryResizeTimer = 0;
+let behindScenesLayoutFrame = 0;
 let archiveLoadObserver;
 const inlineTransitionMs = 720;
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -158,8 +160,41 @@ function imageAspectRatio(image) {
   const src = image.currentSrc || image.getAttribute("src") || image.dataset.src;
   const dimensions = window.IMAGE_DIMENSIONS?.[src];
   if (dimensions) return dimensions[0] / dimensions[1];
-  if (image.width && image.height) return image.width / image.height;
+  const widthAttribute = Number(image.getAttribute("width"));
+  const heightAttribute = Number(image.getAttribute("height"));
+  if (widthAttribute && heightAttribute) return widthAttribute / heightAttribute;
   return image.naturalWidth && image.naturalHeight ? image.naturalWidth / image.naturalHeight : 1;
+}
+
+function layoutBehindScenes() {
+  if (!behindScenesGrid) return;
+  window.cancelAnimationFrame(behindScenesLayoutFrame);
+  const cards = [...behindScenesGrid.querySelectorAll(".behind-card")];
+
+  if (window.innerWidth > 900) {
+    behindScenesGrid.classList.remove("is-mobile-masonry");
+    behindScenesGrid.style.removeProperty("height");
+    cards.forEach(card => {
+      card.style.removeProperty("width");
+      card.style.removeProperty("transform");
+    });
+    return;
+  }
+
+  behindScenesGrid.classList.add("is-mobile-masonry");
+  const gap = window.innerWidth <= 380 ? 6 : 8;
+  const columnWidth = (behindScenesGrid.clientWidth - gap) / 2;
+  cards.forEach(card => { card.style.width = `${columnWidth}px`; });
+
+  behindScenesLayoutFrame = window.requestAnimationFrame(() => {
+    const heights = [0, 0];
+    cards.forEach(card => {
+      const column = heights[0] <= heights[1] ? 0 : 1;
+      card.style.transform = `translate3d(${column * (columnWidth + gap)}px, ${heights[column]}px, 0)`;
+      heights[column] += card.getBoundingClientRect().height + gap;
+    });
+    behindScenesGrid.style.height = `${Math.max(...heights) - gap}px`;
+  });
 }
 
 function galleryPreviewSrc(src) {
@@ -759,7 +794,10 @@ gallerySection.addEventListener("pointerdown", scheduleGalleryRotation, { passiv
 gallerySection.addEventListener("keydown", scheduleGalleryRotation);
 window.addEventListener("resize", () => {
   window.clearTimeout(galleryResizeTimer);
-  galleryResizeTimer = window.setTimeout(() => document.querySelectorAll("[data-gallery-grid]").forEach(layoutArchiveGrid), 140);
+  galleryResizeTimer = window.setTimeout(() => {
+    document.querySelectorAll("[data-gallery-grid]").forEach(layoutArchiveGrid);
+    layoutBehindScenes();
+  }, 140);
 }, { passive: true });
 const galleryObserver = new IntersectionObserver(entries => entries.forEach(entry => {
   galleryIsVisible = entry.isIntersecting;
@@ -777,3 +815,5 @@ document.addEventListener("visibilitychange", () => {
 });
 observeReveals();
 prepareScenes();
+layoutBehindScenes();
+document.fonts?.ready.then(layoutBehindScenes);
