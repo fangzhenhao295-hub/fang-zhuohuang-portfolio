@@ -59,24 +59,6 @@ const inlineTransitionMs = 360;
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const compactLayout = window.matchMedia("(max-width: 900px)");
 const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
-const themeToggle = document.querySelector("[data-theme-toggle]");
-const themeColor = document.querySelector('meta[name="theme-color"]');
-
-function applyTheme(theme, persist = true) {
-  const nextTheme = theme === "light" ? "light" : "dark";
-  document.documentElement.dataset.theme = nextTheme;
-  themeColor?.setAttribute("content", nextTheme === "dark" ? "#090909" : "#ffffff");
-  themeToggle?.setAttribute("aria-label", nextTheme === "dark" ? "切换为亮色主题" : "切换为深色主题");
-  themeToggle?.setAttribute("aria-pressed", String(nextTheme === "light"));
-  if (!persist) return;
-  try { localStorage.setItem("fz-theme", nextTheme); } catch (error) {}
-}
-
-applyTheme(document.documentElement.dataset.theme, false);
-themeToggle?.addEventListener("click", () => {
-  applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
-});
-
 const numberedImages = (base, prefix, count, credit, note) => Array.from({ length: count }, (_, index) => ({
   src: `${base}/${prefix}-${String(index + 1).padStart(2, "0")}.jpg`,
   alt: `${note} ${String(index + 1).padStart(2, "0")}`,

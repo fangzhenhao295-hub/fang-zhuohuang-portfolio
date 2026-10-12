@@ -1,30 +1,23 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="方卓煌的导演、摄影、后期、品牌内容与视觉设计作品集。">
-  <meta name="theme-color" content="#090909">
+  <meta name="theme-color" content="#ffffff">
   <title>方卓煌｜作品集</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/fonts/HarmonyOS-Sans-SC-Regular.woff2" as="font" type="font/woff2" crossorigin>
-  <script>
-    try {
-      const savedTheme = localStorage.getItem("fz-theme");
-      if (savedTheme === "light") document.documentElement.dataset.theme = "light";
-    } catch (error) {}
-  </script>
-  <link rel="stylesheet" href="styles.css?v=20261011-19">
+  <link rel="stylesheet" href="styles.css?v=20261012-2">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="#top" aria-label="返回封面"><img class="brand-logo" src="assets/second-chapter-studio-transparent.png" alt="" width="1788" height="880"></a>
     <nav class="top-nav" aria-label="主导航">
-      <a href="#observations">摄影</a><a href="#work">影像</a><a href="#behind-scenes">制作</a><a href="#profile">关于我</a><a href="#capabilities">工作方式</a><a href="#contact">联系我</a>
+      <a href="#observations"><span>摄影</span><small>Archive</small></a><a href="#work"><span>影像</span><small>Selected work</small></a><a href="#behind-scenes"><span>制作</span><small>Process</small></a><a href="#profile"><span>关于我</span><small>About</small></a><a href="#capabilities"><span>工作方式</span><small>Approach</small></a><a href="#contact"><span>联系我</span><small>Contact</small></a>
     </nav>
     <div class="header-actions">
       <span class="header-meta">PORTFOLIO · 2026</span>
-      <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换为亮色主题" title="切换明暗主题"><span aria-hidden="true"></span></button>
     </div>
   </header>
 
@@ -77,6 +70,11 @@
     </section>
 
     <section id="profile" class="profile page-section reveal-section">
+      <div class="profile-intro" aria-labelledby="profile-intro-title">
+        <p class="overline">INTRODUCTION / 影像创作者</p>
+        <h2 id="profile-intro-title">方卓煌是一名在真实现场、地方文化与品牌传播之间工作的影像创作者。他以导演、摄影与后期，将人物、空间和正在发生的生活组织成可以被看见的叙事。</h2>
+        <div class="profile-intro-meta"><span>BASED IN QUANZHOU</span><span>AVAILABLE FOR SELECTED COLLABORATIONS</span><span>2024—2026</span></div>
+      </div>
       <div class="profile-name">
         <p class="overline">ABOUT / 关于我</p>
         <h2>方卓煌</h2>
@@ -390,6 +388,6 @@
     <aside id="imagePanel" class="image-panel"></aside>
     <footer><span id="imageTitle"></span><span id="imageCount"></span></footer>
   </dialog>
-  <script src="assets/image-dimensions.js?v=20261011-3"></script><script src="content.js?v=20261011-6"></script><script src="app.js?v=20261011-19"></script>
+  <script src="assets/image-dimensions.js?v=20261011-3"></script><script src="content.js?v=20261011-6"></script><script src="app.js?v=20261012-1"></script>
 </body>
 </html>
