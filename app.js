@@ -25,7 +25,9 @@ const behindScenesGrid = document.querySelector(".behind-scenes-grid");
 if (aboutDialog && profileEssay) profileEssay.insertAdjacentElement("afterend", aboutDialog);
 
 const main = document.querySelector("#top");
-const orderedSectionIds = ["observations", "work", "behind-scenes", "profile", "capabilities"];
+const initialHash = window.location.hash;
+let initialAnchorPending = Boolean(initialHash);
+const orderedSectionIds = ["work", "observations", "behind-scenes", "profile"];
 if (main) orderedSectionIds.forEach(id => main.append(document.querySelector(`#${id}`)));
 
 const archiveIntro = document.querySelector(".archive-intro");
@@ -41,6 +43,7 @@ if (taxonomyNote && projectList) {
 }
 
 let activeCategory = "all";
+const expandedProjectIds = new Set(data.projects.slice(0, 3).map(project => project.id));
 let activeProject = null;
 let activeSlide = 0;
 let galleryIndex = 0;
@@ -169,9 +172,9 @@ const personalCreation = galleryItems.find(item => item.title === "个人创作"
 const childhoodSeries = galleryItems.find(item => item.title === "童年，总是不具象的");
 const peopleAndPlaces = galleryItems.find(item => item.title === "人物与地方");
 
-personalCreation.title = "个人摄影";
-personalCreation.description = "一个主题组照与两组按色调整理的近期观察";
-personalCreation.note = "保留明确命名的组照，其余作品不再假定地点或事件，而按黑白灰与综合色调整理。";
+personalCreation.title = "个人创作";
+personalCreation.description = "主题组照，以及黑白与彩色的日常记录";
+personalCreation.note = "以主题组照和日常观察，记录人物、空间与生活中的细节。";
 
 const personalPool = [...personalCreation.images, ...peopleAndPlaces.images]
   .filter(image => !["fog-crowd.jpg", "field-note-01.jpg", "field-note-02.jpg"]
@@ -182,20 +185,20 @@ personalCreation.series = [
   { title:childhoodSeries.title, description:"童年、亲密关系与水中倒影", note:childhoodSeries.note, images:childhoodSeries.images },
   {
     title:"近期观察｜黑白与灰",
-    description:"雾、剪影、舞台与低照度空间",
-    note:"把原本分散在近期观察与山中雨雾中的照片合并，以明暗、雾气和低饱和度作为观看线索。",
+    description:"舞台、雨雾、街巷与人物剪影",
+    note:"以黑白画面的明暗、雾气与人物轮廓，记录舞台、街巷和山中的日常现场。",
     images:imagesByFile([
       "stage-piano.jpg", "silhouettes.jpg",
       "dafeng-04.jpg", "dafeng-01.jpg", "dafeng-02.jpg", "dafeng-03.jpg",
-      "field-note-04.jpg", "field-note-06.jpg", "field-note-05.jpg"
+      "field-note-04.jpg", "field-note-06.jpg"
     ])
   },
   {
-    title:"近期观察｜综合色调",
-    description:"青绿、暖色与夜间光线",
-    note:"按画面的综合色调组织人物、地景与日常现场，不再为不确定的照片添加地点判断。",
+    title:"近期观察｜彩色",
+    description:"人物、地景与日常光线",
+    note:"在人物、地景与日常光线中观察色彩，保留现场的空间关系和生活细节。",
     images:imagesByFile([
-      "field-note-10.jpg", "camera-01.jpg", "camera-02.jpg",
+      "field-note-10.jpg", "field-note-05.jpg", "camera-01.jpg", "camera-02.jpg",
       "camera-03.jpg", "ridge-filmmaker.jpg", "field-note-08.jpg",
       "field-note-07.jpg", "field-note-03.jpg", "camera-04.jpg",
       "camera-05.jpg", "camera-06.jpg", "camera-07.jpg",
@@ -212,7 +215,7 @@ personalCreation.images = personalCreation.series.flatMap(series => series.image
 galleryItems.splice(galleryItems.indexOf(childhoodSeries), 1);
 galleryItems.splice(galleryItems.indexOf(peopleAndPlaces), 1);
 
-const galleryOrder = ["个人摄影", "产品与静物", "手机摄影"];
+const galleryOrder = ["手机摄影", "个人创作", "产品与静物"];
 galleryItems.sort((a, b) => galleryOrder.indexOf(a.title) - galleryOrder.indexOf(b.title));
 
 function escapeHtml(value = "") {
@@ -284,18 +287,45 @@ function projectSummaryMarkup(project) {
 }
 
 function projectLinkMarkup(project, className) {
-  return projectLinks(project).map(item => `<a class="${className}" href="${escapeHtml(item.href)}" target="_blank" rel="noreferrer"><span>${escapeHtml(item.label || "相关链接")}</span><span>${escapeHtml(item.href)} ↗</span></a>`).join("");
+  return projectLinks(project).map(item => {
+    const host = new URL(item.href).hostname;
+    const platform = host.includes("douyin") ? "抖音" : host.includes("weixin") ? "视频号" : host.includes("baidu") ? "百度网盘" : "品牌官网";
+    const label = host.includes("oxsaudio") ? "查看 OXS 品牌网站" : project.id === "foreign-language" ? "查看中英文成片" : "观看完整影片";
+    return `<a class="${className}" href="${escapeHtml(item.href)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(label)}：${escapeHtml(project.title)}，${platform}，在新窗口打开"><span class="project-link-label">${label}<span class="project-link-arrow" aria-hidden="true">↗</span></span><small>${platform}${item.label?.includes("图书馆") ? " · 图书馆发布" : ""}</small></a>`;
+  }).join("");
 }
 
 function projectExpandedMarkup(project) {
   const media = project.media || [];
   return `
     <header>
-      <span>PROJECT MEDIA / 作品影像与链接</span>
-      <button class="project-collapse" type="button" data-project-collapse="${project.id}" aria-label="收起${escapeHtml(project.title)}完整项目" title="收起项目"><span class="project-toggle-arrow is-open" aria-hidden="true"></span></button>
+      <span>SELECTED STILLS / 作品影像</span>
+      <button class="project-collapse" type="button" data-project-collapse="${project.id}" aria-label="收起${escapeHtml(project.title)}作品影像" title="收起作品影像"><span class="project-toggle-arrow is-open" aria-hidden="true"></span></button>
     </header>
-    ${media.length ? `<div class="project-inline-media ${media.length === 1 ? "is-single" : ""}">${media.map((item, index) => `<figure><img data-src="${item.src}" alt="${escapeHtml(item.alt || `${project.title}案例图片 ${index + 1}`)}"${imageSizeAttributes(item.src)} loading="lazy" decoding="async" fetchpriority="low"><figcaption>${escapeHtml(item.label || `IMAGE ${String(index + 1).padStart(2, "0")}`)}</figcaption></figure>`).join("")}</div>` : ""}
-    ${projectLinks(project).length ? `<div class="project-inline-links">${projectLinkMarkup(project, "project-inline-link")}</div>` : ""}`;
+    ${media.length ? `<div class="project-inline-media ${project.id === "oxs" ? "is-original" : ""} ${media.length === 1 ? "is-single" : ""}">${media.map((item, index) => `<figure><img data-src="${projectPreviewSrc(item.src)}" alt="${escapeHtml(item.alt || `${project.title}案例图片 ${index + 1}`)}"${imageSizeAttributes(item.src)} loading="lazy" decoding="async" fetchpriority="low"><figcaption>${escapeHtml(item.label || `IMAGE ${String(index + 1).padStart(2, "0")}`)}</figcaption></figure>`).join("")}</div>` : ""}`;
+}
+
+function projectPreviewSrc(src) {
+  return `assets/previews/${src.replace(/^assets\//, "").replace(/\.[^.]+$/, ".jpg")}`;
+}
+
+function layoutOriginalProjectMedia(inline) {
+  const grid = inline.querySelector(".project-inline-media.is-original");
+  if (!grid || inline.hidden) return;
+  const columns = window.innerWidth <= 900 ? 2 : 3;
+  const gap = window.innerWidth <= 900 ? 8 : 12;
+  const width = grid.clientWidth;
+  if (!width) return;
+  const columnWidth = (width - gap * (columns - 1)) / columns;
+  grid.querySelectorAll("figure").forEach(figure => {
+    const image = figure.querySelector("img");
+    const ratio = imageAspectRatio(image);
+    const span = ratio > 2.2 ? Math.min(2, columns) : 1;
+    const imageWidth = columnWidth * span + gap * (span - 1);
+    const height = imageWidth / ratio + figure.querySelector("figcaption").getBoundingClientRect().height;
+    figure.style.gridColumn = `span ${span}`;
+    figure.style.gridRow = `span ${Math.ceil((height + gap) / (4 + gap))}`;
+  });
 }
 
 function renderFilters() {
@@ -309,9 +339,11 @@ function renderProjects() {
   const projects = activeCategory === "all" ? data.projects : data.projects.filter(item => item.category === activeCategory);
   projectList.innerHTML = projects.map((project, index) => {
     const side = index % 2 === 0 ? "left" : "right";
+    const hasMedia = Boolean(project.media?.length);
+    const expanded = hasMedia && expandedProjectIds.has(project.id);
     const cover = project.cover ? `
       <span class="project-cover-frame" aria-hidden="true">
-        <img class="project-cover" src="${project.cover}" alt=""${imageSizeAttributes(project.cover)} loading="lazy" decoding="async" fetchpriority="low">
+        <img class="project-cover" src="${projectPreviewSrc(project.cover)}" alt=""${imageSizeAttributes(project.cover)} loading="lazy" decoding="async" fetchpriority="low">
         <span class="project-corner project-corner-a"></span>
         <span class="project-corner project-corner-b"></span>
         <span class="project-corner project-corner-c"></span>
@@ -319,7 +351,7 @@ function renderProjects() {
       </span>` : "";
     return `
       <article class="project-row project-${escapeHtml(project.id)} project-side-${side} reveal-section ${project.importance === "secondary" ? "is-secondary" : ""}">
-        <button class="project-media visual-${escapeHtml(project.visual || "default")} ${project.cover ? "has-cover" : ""}" ${project.cover ? `style="--project-cover:url('${project.cover}')"` : ""} type="button" data-project="${project.id}" aria-expanded="true" aria-label="收起${escapeHtml(project.title)}完整项目">
+        <button class="project-media visual-${escapeHtml(project.visual || "default")} ${project.cover ? "has-cover" : ""}" type="button" data-project="${project.id}" aria-expanded="${expanded}" aria-controls="project-stills-${project.id}" aria-label="${expanded ? "收起" : "展开"}${escapeHtml(project.title)}作品影像"${hasMedia ? "" : " disabled"}>
           ${cover}
           <div class="media-top"><span>PROJECT ${project.no}</span><span>${escapeHtml(project.year)}</span></div>
           <div class="project-card-copy">
@@ -327,49 +359,48 @@ function renderProjects() {
             <h3>${escapeHtml(project.title)}</h3>
             <span>${escapeHtml(project.type)}</span>
           </div>
-          <div class="media-bottom"><span>${escapeHtml(project.role)}</span><span class="project-media-action">项目详情 <i class="project-toggle-arrow is-open" aria-hidden="true"></i></span></div>
+          <div class="media-bottom"><span>${escapeHtml(project.role)}</span>${hasMedia ? `<span class="project-media-action">作品影像 <i class="project-toggle-arrow ${expanded ? "is-open" : ""}" aria-hidden="true"></i></span>` : ""}</div>
         </button>
         <div class="project-copy">
           <div class="project-summary">${projectSummaryMarkup(project)}</div>
           <div class="project-facts">
-            <div><b>ROLE</b><span>${escapeHtml(project.role)}</span></div>
-            <div><b>RESULT</b><span>${escapeHtml(project.result)}</span></div>
+            <div><b>我的职责 / ROLE</b><span>${escapeHtml(project.role)}</span></div>
+            <div><b>项目成果 / RESULT</b><span>${escapeHtml(project.result)}</span></div>
           </div>
           <div class="project-actions">
-            <button class="project-toggle" type="button" data-project="${project.id}" aria-expanded="true" aria-label="收起${escapeHtml(project.title)}完整项目"><span class="project-toggle-label">收起完整项目</span><span class="project-toggle-arrow is-open" aria-hidden="true"></span></button>
+            ${projectLinks(project).length ? `<div class="project-watch-links">${projectLinkMarkup(project, "project-watch-link")}</div>` : ""}
+            ${hasMedia ? `<button class="project-toggle" type="button" data-project="${project.id}" aria-expanded="${expanded}" aria-controls="project-stills-${project.id}" aria-label="${expanded ? "收起" : "展开"}${escapeHtml(project.title)}作品影像"><span class="project-toggle-label">${expanded ? "收起作品影像" : "展开作品影像"}</span><span class="project-toggle-arrow ${expanded ? "is-open" : ""}" aria-hidden="true"></span></button>` : ""}
           </div>
         </div>
-        <section class="project-inline-case open" data-project-inline="${project.id}" style="height:auto">${projectExpandedMarkup(project)}</section>
+        <section id="project-stills-${project.id}" class="project-inline-case${expanded ? " open" : ""}" data-project-inline="${project.id}"${expanded ? ' style="height:auto"' : " hidden"}>${expanded ? projectExpandedMarkup(project) : ""}</section>
       </article>`;
   }).join("");
   observeProjectMedia();
+  projectList.querySelectorAll(".project-inline-case.open").forEach(layoutOriginalProjectMedia);
   observeReveals();
-}
-
-function hydrateProjectMedia(inline) {
-  inline.querySelectorAll("img[data-src]").forEach(image => {
-    image.src = image.dataset.src;
-    image.removeAttribute("data-src");
-  });
 }
 
 function observeProjectMedia() {
   projectMediaObserver?.disconnect();
   projectMediaObserver = new IntersectionObserver(entries => entries.forEach(entry => {
     if (!entry.isIntersecting) return;
-    hydrateProjectMedia(entry.target);
+    const image = entry.target;
+    image.src = image.dataset.src;
+    image.removeAttribute("data-src");
     projectMediaObserver.unobserve(entry.target);
-  }), { rootMargin:"900px 0px" });
-  projectList.querySelectorAll(".project-inline-case.open").forEach(inline => projectMediaObserver.observe(inline));
+  }), { rootMargin:"280px 0px" });
+  projectList.querySelectorAll(".project-inline-case.open img[data-src]").forEach(image => projectMediaObserver.observe(image));
 }
 
 function setProjectExpanded(id, expanded) {
+  if (expanded) expandedProjectIds.add(id);
+  else expandedProjectIds.delete(id);
   document.querySelectorAll(`[data-project="${id}"]`).forEach(button => {
     button.setAttribute("aria-expanded", String(expanded));
     const project = data.projects.find(item => item.id === id);
-    button.setAttribute("aria-label", `${expanded ? "收起" : "展开"}${project ? project.title : ""}完整项目`);
+    button.setAttribute("aria-label", `${expanded ? "收起" : "展开"}${project ? project.title : ""}作品影像`);
     const label = button.querySelector(".project-toggle-label");
-    if (label) label.textContent = expanded ? "收起完整项目" : "展开完整项目";
+    if (label) label.textContent = expanded ? "收起作品影像" : "展开作品影像";
     button.querySelectorAll(".project-toggle-arrow").forEach(arrow => arrow.classList.toggle("is-open", expanded));
   });
 }
@@ -381,7 +412,7 @@ function settleInlineHeight(inline) {
 
 function openProject(id) {
   const project = data.projects.find(item => item.id === id);
-  if (!project) return;
+  if (!project?.media?.length) return;
   const inline = document.querySelector(`[data-project-inline="${id}"]`);
   if (!inline) return;
   if (!inline.hidden && inline.classList.contains("open")) {
@@ -390,13 +421,14 @@ function openProject(id) {
   }
 
   inline.innerHTML = projectExpandedMarkup(project);
-  hydrateProjectMedia(inline);
   window.clearTimeout(inline._closeTimer);
   window.clearTimeout(inline._openTimer);
   inline.hidden = false;
   inline.classList.remove("open");
   inline.style.height = "0px";
   setProjectExpanded(id, true);
+  layoutOriginalProjectMedia(inline);
+  observeProjectMedia();
 
   if (reduceMotion.matches || compactLayout.matches) {
     inline.classList.add("open");
@@ -526,8 +558,8 @@ function layoutArchiveGrid(grid) {
 
       grid.classList.remove("is-mobile-masonry");
 
-      const gap = window.innerWidth <= 760 ? 7 : 12;
-      const targetHeight = window.innerWidth <= 760 ? 220 : 260;
+      const gap = 8;
+      const targetHeight = 230;
       const ratios = images.map(imageAspectRatio);
       const ratioSum = ratios.reduce((sum, ratio) => sum + ratio, 0);
       const naturalRowCount = Math.round((ratioSum * targetHeight) / width);
@@ -638,7 +670,7 @@ function renderAllGalleries() {
     image.src = image.dataset.src;
     image.removeAttribute("data-src");
     archiveLoadObserver.unobserve(image);
-  }), { rootMargin:"1000px 0px" });
+  }), { rootMargin:"320px 0px" });
   viewport.querySelectorAll("img[data-src]").forEach(image => archiveLoadObserver.observe(image));
 }
 
@@ -839,7 +871,7 @@ function resetCoverPointer() {
 }
 
 function enterPortfolio() {
-  const target = document.querySelector("#observations");
+  const target = document.querySelector("#work");
   animateScrollTo(() => sectionScrollTarget(target), 820);
 }
 
@@ -918,7 +950,7 @@ function updateHeaderTheme() {
   siteHeader.classList.toggle("is-on-cover", window.scrollY < coverBottom - siteHeader.offsetHeight);
 }
 
-const sceneIds = ["observations", "work", "behind-scenes", "profile", "capabilities", "contact"];
+const sceneIds = ["work", "observations", "behind-scenes", "profile", "contact"];
 function updateActiveNav() {
   const readingLine = window.scrollY + window.innerHeight * .32;
   let current = sceneIds[0];
@@ -976,6 +1008,7 @@ function animateScrollTo(targetY, customDuration = 660) {
 }
 
 document.querySelectorAll('.site-header a[href^="#"]').forEach(link => link.addEventListener("click", event => {
+  initialAnchorPending = false;
   const target = document.querySelector(link.getAttribute("href"));
   if (!target) return;
   event.preventDefault();
@@ -1044,7 +1077,7 @@ function observeReveals() {
 }
 
 function prepareScenes() {
-  document.querySelectorAll("#profile, #capabilities, #observations, #work, #behind-scenes, #contact").forEach(scene => scene.classList.add("scene"));
+  document.querySelectorAll("#profile, #observations, #work, #behind-scenes, #contact").forEach(scene => scene.classList.add("scene"));
   document.body.classList.add("motion-ready");
   scheduleScrollWork();
 }
@@ -1059,6 +1092,7 @@ window.addEventListener("resize", () => {
   window.clearTimeout(galleryResizeTimer);
   galleryResizeTimer = window.setTimeout(() => {
     document.querySelectorAll("[data-gallery-grid]").forEach(layoutArchiveGrid);
+    projectList.querySelectorAll(".project-inline-case.open").forEach(layoutOriginalProjectMedia);
     layoutBehindScenes();
   }, 140);
 }, { passive: true });
@@ -1080,3 +1114,16 @@ observeReveals();
 prepareScenes();
 layoutBehindScenes();
 document.fonts?.ready.then(layoutBehindScenes);
+
+// Resolve deep links after section ordering and dimension-based gallery layout settle.
+["wheel", "touchstart", "pointerdown", "keydown"].forEach(type => window.addEventListener(type, () => {
+  initialAnchorPending = false;
+}, { once:true, passive:true }));
+document.fonts.ready.then(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+  if (!initialAnchorPending) return;
+  initialAnchorPending = false;
+  let id = initialHash.slice(1);
+  try { id = decodeURIComponent(id); } catch (error) {}
+  const target = document.getElementById(id);
+  if (target) window.scrollTo(0, id === "top" ? 0 : sectionScrollTarget(target));
+})));

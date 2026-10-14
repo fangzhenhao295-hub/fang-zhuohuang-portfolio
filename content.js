@@ -21,7 +21,7 @@ window.PORTFOLIO_DATA = {
       { src:"assets/projects/beyond-wide/still-10.jpg", alt:"《比你以为的阔》小刘毕业设计场景", label:"FILM STILL / 10" },
       { src:"assets/projects/beyond-wide/still-14.jpg", alt:"《比你以为的阔》校园友情出演", label:"FILM STILL / 14" },
     ] },
-    { id:"liancheng", no:"03", title:"早晚得来", year:"2025", category:"commissioned", relation:"文旅委托 / 目的地传播", type:"冠豸山 5A 景区国庆宣传片", role:"导演 / 摄影 / 后期 / 前期对接与场地协调", summary:"《早晚得来》从现代生活“总在赶时间”的共同经验切入，用“一早一晚”的结构，把早餐、山水、古村、非遗与夜市串成一条可以感知的连城旅行线索。\n项目落地于冠豸山景区获评国家 5A 级旅游景区后的首个国庆假期。片名既对应从清晨到夜晚的生活节奏，也带着“迟早都得来”的邀请，让节日传播不止于罗列景点。\n我更希望观众看见一座城的生活温度与情感节奏：连城不仅值得抵达，也是一处能让人放慢脚步、愿意停留下来的地方。", result:"多平台累计播放约 13 万；获福建省第十二届大学生影像大赛重大主题类一等奖。", link:"https://weixin.qq.com/sph/AdmONtI6SI", linkLabel:"观看原片", visual:"daynight", cover:"assets/projects/liancheng/cover-user.jpg", media:[
+    { id:"liancheng", no:"03", title:"早晚得来", year:"2025", category:"commissioned", relation:"文旅委托 / 目的地传播", type:"冠豸山 5A 景区国庆宣传片", role:"导演 / 摄影 / 后期 / 前期对接与场地协调", summary:"以“从早到晚”的旅行节奏，串联连城的早餐、山水、古村、非遗和夜市，邀请观众在日常生活里认识这座城。\n影片为冠豸山获评国家 5A 级旅游景区后的首个国庆假期制作。片名借“迟早都得来”的口语表达，把节日宣传落在地方生活与人的感受上。", result:"多平台累计播放约 13 万；获福建省第十二届大学生影像大赛重大主题类一等奖。", link:"https://weixin.qq.com/sph/AdmONtI6SI", linkLabel:"观看原片", visual:"daynight", cover:"assets/projects/liancheng/cover-user.jpg", media:[
       { src:"assets/projects/liancheng/still-01.jpg", alt:"夜市摊位中的晚餐现场", label:"FILM STILL / 夜市" },
       { src:"assets/projects/liancheng/still-02.jpg", alt:"炉火上的砂锅与升起的蒸汽", label:"FILM STILL / 炉火" },
       { src:"assets/projects/liancheng/still-04.jpg", alt:"油锅旁刚出炉的灯盏糕", label:"FILM STILL / 早餐" },
@@ -36,7 +36,7 @@ window.PORTFOLIO_DATA = {
       { src:"assets/projects/liancheng/still-17.jpg", alt:"连城县城夜景与烟花航拍", label:"FILM STILL / 早晚都快乐" }
     ] },
     { id:"houapo", no:"04", title:"有味有爱有乡愁", year:"2026", category:"commissioned", relation:"商业委托 / 品牌内容", type:"侯阿婆肉粽端午品牌人文宣传片", role:"摄影 / 后期", summary:"以一枚泉州烧肉粽为入口，回到侯阿婆肉粽近半个世纪的传承现场。\n六分钟成片从原料、手艺、三代经营与海外乡愁切入，让地方味道成为品牌历史与闽南情感的共同载体。", result:"泉州晚报视频号单平台播放约 5 万。", link:"https://weixin.qq.com/sph/Aohd4RGF4m", visual:"taste", cover:"assets/projects/houapo/cover.jpg", media:[] },
-    { id:"sibao", no:"05", title:"四堡雕版印刷", year:"2025", category:"authored", relation:"文化记录 / 非遗影像", type:"非遗文化纪录片", role:"导演 / 脚本 / 主摄影 / 主后期", summary:"走进连城四堡，从地方书坊遗迹、雕版工艺与历史线索出发，重新靠近一项延续数百年的传统印刷技艺。\n作品不试图完整复述它的全部历史，而以木版、刻刀、墨色和纸张构成视觉骨架，用传承人的经验补足时间的厚度，也把家族协作、乡村文脉与时代变迁带进画面。\n我希望让刀刻与墨香重新进入今天的观看，使四堡雕版印刷不只作为知识被介绍，也成为仍可被感知、被理解的地方文化记忆。", result:"福建省第十二届大学生影像大赛创意类二等奖；第八届金鹄青年电影周暨原创影像大赛文旅单元入围。", link:"https://weixin.qq.com/sph/AqOHkssWHj", visual:"print", cover:"assets/projects/sibao/cover-user.jpg", media:[
+    { id:"sibao", no:"05", title:"四堡雕版印刷", year:"2025", category:"authored", relation:"文化记录 / 非遗影像", type:"非遗文化纪录片", role:"导演 / 脚本 / 主摄影 / 主后期", summary:"走进连城四堡的书坊遗迹与雕版现场，记录这项延续数百年的传统印刷技艺。\n影片以木版、刻刀、墨色和纸张呈现工艺细节，并通过传承人的讲述连接家族协作与地方文脉。", result:"福建省第十二届大学生影像大赛创意类二等奖；第八届金鹄青年电影周暨原创影像大赛文旅单元入围。", link:"https://weixin.qq.com/sph/AqOHkssWHj", visual:"print", cover:"assets/projects/sibao/cover-user.jpg", media:[
       { src:"assets/projects/sibao/still-02.jpg", alt:"书坊建筑中的人物", label:"FILM STILL / 02" },
       { src:"assets/projects/sibao/still-04.jpg", alt:"古籍与木桌", label:"FILM STILL / 04" },
       { src:"assets/projects/sibao/still-07.jpg", alt:"古樟树与刀痕文字", label:"FILM STILL / 07" },
@@ -50,7 +50,7 @@ window.PORTFOLIO_DATA = {
       { src:"assets/projects/sibao/still-18.jpg", alt:"传承人雕版工作场景", label:"FILM STILL / 18" },
       { src:"assets/projects/sibao/still-22.jpg", alt:"村落航拍与田野", label:"FILM STILL / 22" }
     ] },
-    { id:"xinquan-fireworks", no:"06", title:"新泉烧炮", year:"2025", category:"authored", relation:"田野记录 / 非遗影像", type:"闽西客家民俗纪录片", role:"导演 / 摄影 / 航拍 / 后期", summary:"《新泉烧炮》沿着闽西新泉正月十四至十五的仪式次序，记录制炮、迎神、巡游、祭祀与烧炮，呈现这项延续多代的客家民俗如何由村民共同完成。\n相比只追逐炮火的热闹，我更关注火光、烟雾、队伍与神轿背后的人：他们的神情、动作、秩序，以及温泉边集体劳作所维系的村落关系。\n作品以贴近现场的方式补充地方影像记录，让仪式从节庆奇观回到共同生活，也记录年轻一代如何参与、记住并继续讲述它。", result:"获福建省第十二届大学生影像大赛重大主题类一等奖。", link:"https://weixin.qq.com/sph/AA48agKVhh", linkLabel:"观看原片", visual:"fire", cover:"assets/projects/xinquan-fireworks/still-user-atmosphere.jpg", media:[
+    { id:"xinquan-fireworks", no:"06", title:"新泉烧炮", year:"2025", category:"authored", relation:"田野记录 / 非遗影像", type:"闽西客家民俗纪录片", role:"导演 / 摄影 / 航拍 / 后期", summary:"沿着闽西新泉正月十四至十五的仪式次序，记录制炮、迎神、巡游、祭祀与烧炮，呈现村民如何共同完成这一民俗活动。\n镜头也关注炮火之外的人物、劳作与村落关系，以及年轻一代如何参与其中。", result:"获福建省第十二届大学生影像大赛重大主题类一等奖。", link:"https://weixin.qq.com/sph/AA48agKVhh", linkLabel:"观看原片", visual:"fire", cover:"assets/projects/xinquan-fireworks/still-user-atmosphere.jpg", media:[
       { src:"assets/projects/xinquan-fireworks/still-01.jpg", alt:"群山环抱的新泉村落航拍", label:"FILM STILL / 村落" },
       { src:"assets/projects/xinquan-fireworks/still-02.jpg", alt:"村民手工制作炮竹的手部特写", label:"FILM STILL / 制炮" },
       { src:"assets/projects/xinquan-fireworks/still-03.jpg", alt:"院落中制作炮竹的俯拍画面", label:"FILM STILL / 制炮院落" },
@@ -70,7 +70,7 @@ window.PORTFOLIO_DATA = {
       { src:"assets/projects/xinquan-fireworks/still-23.jpg", alt:"一家人在雨伞下观看仪式", label:"FILM STILL / 家人" },
       { src:"assets/projects/xinquan-fireworks/still-24.jpg", alt:"村民在供桌前整理祭品", label:"FILM STILL / 传承" }
     ] },
-    { id:"ball-astronomy", no:"07", title:"一个球的故事", year:"2025", category:"authored", relation:"校园记录 / 社团记忆", type:"连城一中天文社纪录片", role:"导演 / 摄影 / 后期", summary:"从天文台里的一架望远镜出发，回看连城一中天文社自 2003 年成立以来的观测、科普与社团传承。\n影片把旧照片、历届成员口述、夜间观测和社员拍摄的深空影像交织在一起，让一颗看似冰冷的仪器，成为一群年轻人持续仰望星空的共同记忆。", result:"完成社团历史、成员口述与天文观测素材的影像整理，记录一代代学生共同延续的校园天文实践。", visual:"cosmic", cover:"assets/projects/ball-astronomy/cover.jpg", media:[
+    { id:"ball-astronomy", no:"07", title:"一个球的故事", year:"2025", category:"authored", relation:"校园记录 / 社团记忆", type:"连城一中天文社纪录片", role:"导演 / 摄影 / 后期", summary:"以天文台中的一架望远镜为线索，记录连城一中天文社自 2003 年成立以来的观测、科普与社团传承。\n我通过旧照片、历届成员口述和夜间观测现场组织叙事，并结合社员拍摄的深空影像，呈现一代代学生共同延续的校园记忆。", result:"完成社团历史、成员口述与天文观测素材的整理及成片制作。", visual:"cosmic", cover:"assets/projects/ball-astronomy/cover.jpg", media:[
       { src:"assets/projects/ball-astronomy/still-01.jpg", alt:"天文台穹顶内的大型望远镜", label:"FILM STILL / 望远镜" },
       { src:"assets/projects/ball-astronomy/still-02.jpg", alt:"天文社成员在楼顶调试望远镜", label:"FILM STILL / 调试" },
       { src:"assets/projects/ball-astronomy/still-03.jpg", alt:"天文台穹顶与观测中的社员", label:"FILM STILL / 天文台" },
@@ -85,7 +85,7 @@ window.PORTFOLIO_DATA = {
       { src:"assets/projects/ball-astronomy/still-18.jpg", alt:"银河升起在山林上空", label:"ASTROGRAPHY / 星空" }
     ] },
     { id:"lion-go", no:"08", title:"321Lion go", year:"2026", category:"authored", relation:"主动记录 / 团队群像", type:"运动人物微纪录片", role:"导演 / 摄影 / 后期", summary:"记录台湾教练与大陆学生共同备战大学生极限飞盘联赛。\n雨天训练、临场判断与毕业前最后一场主场比赛，共同构成一支队伍关于成长、协作和告别的群像。", result:"入选第二届“光影记·两岸毕业季”网络微纪录片众创分享活动。", link:"https://v.douyin.com/-0kqckWTZl4/", visual:"motion", cover:"assets/projects/lion-go/cover.jpg", media:[] },
-    { id:"oxs", no:"09", title:"OXS 欧洲市场产品视觉", year:"2025—2026", category:"commissioned", relation:"品牌合作 / 中国品牌出海 / 德国", type:"游戏与家庭音响产品摄影、短视频与展会动效", role:"创意讨论 / 产品摄影 / 短视频与动效制作", summary:"为中国游戏与家庭音响品牌 OXS 参与面向欧洲消费者的五组产品视觉。\n依据既有品牌规范研究色彩比例、产品可读性与光线层次，完成供品牌评审、独立站、社交媒体与海外展会使用的图片、短视频和动效素材。", result:"完成 5 组产品拍摄与配套内容方案；其中一组动效视频在德国科隆游戏展 OXS 展台实际呈现。部分内容属于提案与备选素材，不表述为全部上线。", link:"https://oxsaudio.com/", linkLabel:"访问品牌网站", visual:"product", cover:"assets/projects/oxs/oxs-gaming-03.jpg", media:[
+    { id:"oxs", no:"09", title:"OXS 欧洲市场产品视觉", year:"2025—2026", category:"commissioned", relation:"品牌合作 / 欧洲市场", type:"产品摄影、短视频与展会动效", role:"创意讨论 / 产品摄影 / 短视频与动效制作", summary:"参与 OXS 游戏与家庭音响品牌面向欧洲市场的产品视觉制作，完成五组产品拍摄与配套内容方案。\n我依据品牌规范处理产品材质、色彩与光线，制作图片、短视频及展会循环动效，并完成不同屏幕与发布场景的版本适配。", result:"完成 5 组产品拍摄与配套方案；一组循环动效在德国科隆游戏展展台呈现。部分图片与视频为提案或备选素材。", link:"https://oxsaudio.com/", linkLabel:"访问品牌网站", visual:"product", cover:"assets/projects/oxs/oxs-01.jpg", media:[
       { src:"assets/projects/oxs/oxs-02.jpg", alt:"OXS 产品影像 02", label:"OXS / PRODUCT STILL 02" },
       { src:"assets/projects/oxs/oxs-04.jpg", alt:"OXS 产品影像 04", label:"OXS / PRODUCT STILL 04" },
       { src:"assets/projects/oxs/oxs-06.jpg", alt:"OXS 产品影像 06", label:"OXS / PRODUCT STILL 06" },
@@ -93,7 +93,7 @@ window.PORTFOLIO_DATA = {
       { src:"assets/projects/oxs/oxs-gaming-03.jpg", alt:"OXS 游戏桌面完整场景", label:"OXS GAMING / PRODUCT STILL 03" },
       { src:"assets/projects/oxs/oxs-gamescom-germany.jpg", alt:"OXS 在德国科隆游戏展的实际展台效果", label:"OXS / GAMESCOM COLOGNE, GERMANY" }
     ] },
-    { id:"cooling-down", no:"10", title:"吹着吹着就凉了", year:"2025", category:"authored", relation:"校园剧组 / 剧情创作", type:"2022 级毕业设计剧情短片", role:"主摄影 / 后期初剪 / 最终调色", summary:"2025 年 10 月完成的 2022 级毕业设计剧情短片。\n项目用于检验剧情摄影中的机位选择、演员走位与镜头连续性，也让我在后期初剪和最终调色中重新处理节奏、情绪与画面统一。", result:"完成 21 分钟剧情短片；完整版通过项目网盘查看。", link:"https://pan.baidu.com/s/1nRCeDq0GBoJLq37VaDBxsg?pwd=jgki", linkLabel:"观看完整版", visual:"cool", cover:"assets/projects/cooling-down/cover-official.jpg", media:[
+    { id:"cooling-down", no:"10", title:"吹着吹着就凉了", year:"2025", category:"authored", relation:"校园剧组 / 剧情创作", type:"2022 级毕业设计剧情短片", role:"主摄影 / 后期初剪 / 最终调色", summary:"在这部 2022 级毕业设计剧情短片中担任主摄影，参与后期初剪并负责最终调色。\n拍摄时处理机位、演员走位与镜头连续性；后期围绕叙事节奏与情绪统一画面。", result:"完成 21 分钟剧情短片；完整版通过项目网盘查看。", link:"https://pan.baidu.com/s/1nRCeDq0GBoJLq37VaDBxsg?pwd=jgki", linkLabel:"观看完整版", visual:"cool", cover:"assets/projects/cooling-down/cover-official.jpg", media:[
       { src:"assets/projects/cooling-down/still-02.jpg", alt:"《吹着吹着就凉了》剧照二", label:"FILM STILL / 02" },
       { src:"assets/projects/cooling-down/still-03.jpg", alt:"《吹着吹着就凉了》剧照三", label:"FILM STILL / 03" },
       { src:"assets/projects/cooling-down/still-05.jpg", alt:"《吹着吹着就凉了》剧照五", label:"FILM STILL / 05" },
@@ -101,20 +101,20 @@ window.PORTFOLIO_DATA = {
       { src:"assets/projects/cooling-down/still-07.jpg", alt:"《吹着吹着就凉了》剧照七", label:"FILM STILL / 07" },
       { src:"assets/projects/cooling-down/still-08.jpg", alt:"《吹着吹着就凉了》剧照八", label:"FILM STILL / 08" }
     ] },
-    { id:"foreign-language", no:"11", title:"外国语学院招生宣传片", year:"2020.07", category:"commissioned", relation:"学院委托 / 后期制作", type:"中英文招生宣传片", role:"后期", summary:"基于前期团队提供的拍摄素材，独立承担中英文招生宣传片的后期制作。\n剪辑围绕学院的国际传播、语言学习与校园生活重新组织信息层级，在两个语言版本中统一人物、教学空间和海丝文旅讲解场景的叙事节奏。", result:"2020 年 7 月完成中英文版本交付；成片文件通过项目网盘查看。", link:"https://pan.baidu.com/s/1pCxYVk6oOslAbtUqXGc0BQ?pwd=hing", linkLabel:"查看项目文件", visual:"language", importance:"secondary", cover:"assets/projects/foreign-language/cover.jpg", media:[] }
+    { id:"foreign-language", no:"11", title:"外国语学院招生宣传片", year:"2026.07", category:"commissioned", relation:"学院委托 / 后期制作", type:"中英文招生宣传片", role:"剪辑 / 后期制作", summary:"基于前期团队提供的素材，独立完成中英文招生宣传片的剪辑与后期制作。\n围绕语言学习、国际传播与校园生活梳理内容结构，在两个语言版本中统一画面、信息层级与叙事节奏。", result:"2026 年 7 月完成中英文版本交付。", link:"https://pan.baidu.com/s/1pCxYVk6oOslAbtUqXGc0BQ?pwd=hing", linkLabel:"查看项目文件", visual:"language", importance:"secondary", cover:"assets/projects/foreign-language/cover.jpg", media:[] }
   ]
 };
 
 const preferredProjectOrder = [
   "unwritten-rain",
   "liancheng",
-  "beyond-wide",
-  "houapo",
+  "oxs",
   "sibao",
   "xinquan-fireworks",
+  "houapo",
   "ball-astronomy",
+  "beyond-wide",
   "lion-go",
-  "oxs",
   "cooling-down",
   "foreign-language"
 ];
